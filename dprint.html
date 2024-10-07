@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학급 프린트 신청</title>
+    <style>
+        body {
+            font-family: pretendard, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 90%;
+            max-width: 1200px;
+            background-color: white;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            gap: 30px; 
+        }
+
+        body.dark-mode .container {
+            background-color: #444;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .left-section {
+            width: 50%; 
+        }
+
+        .right-section {
+            width: 50%; 
+        }
+
+        .file-upload {
+            width: 80%;
+            height: 80%;
+            padding: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .file-upload {
+            background-color: #3a3a3a;
+            border-color: #888;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .settings {
+            width: 100%;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .toggle-button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toggle-button, .submit-btn, .toggle-dark-mode {
+    padding: 12px 25px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s; 
+}
+
+.toggle-button.active {
+    background: transparent;
+    border-bottom: #007bff 1px solid;
+    color: #007bff;
+    transform: translateY(-2px); 
+}
+
+.toggle-button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.toggle-button:hover, .submit-btn:hover, .toggle-dark-mode:hover {
+    background-color: #007bff; 
+    color: white;
+    box-shadow: 0 8px 12px rgba(0, 123, 255, 0.3); 
+    transform: translateY(-3px); 
+}
+
+.submit-btn {
+    font-size: 18px;
+}
+
+.toggle-dark-mode {
+    background-color: #444;
+    color: white;
+}
+
+.toggle-dark-mode:hover {
+    background-color: #222;
+}
+
+        .file-preview {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            width: 100%;
+        }
+
+        .file-preview span {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            margin-left: 400px;
+            padding: 15px 40px;
+            background-color: #007bff;
+border-radius: 10px;
+width: 200px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            background: transparent;
+    border-bottom: #007bff 1px solid;
+    color: #007bff;
+    transform: translateY(-2px); 
+        }
+
+        .toggle-dark-mode {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .toggle-dark-mode:hover {
+            background-color: #0056b3;
+        }
+
+        .page-range-input {
+            display: none;
+            margin-left: 10px;
+            padding: 5px;
+            width: 120px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .preview-box {
+            width: 210px; 
+            height: 297px;
+            border: 2px solid #444;
+            background-color: white;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .preview-box.color {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        .preview-box.blackwhite {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .preview-box.portrait {
+            transform: rotate(0deg);
+        }
+
+        .preview-box.landscape {
+            transform: rotate(90deg);
+        }
+
+        .preview-box.a4 {
+            width: 210px;
+            height: 297px;
+        }
+
+        .preview-box.a5 {
+            width: 148px;
+            height: 210px;
+        }
+
+        .preview-box.letter {
+            width: 216px;
+            height: 279px;
+        }
+
+        .preview-box.legal {
+            width: 216px;
+            height: 356px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .left-section, .right-section {
+                width: 100%;
+                padding: 0;
+            }
+
+            .toggle-button {
+                padding: 10px;
+                flex: 1;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+
+            .page-range-input {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .preview-box {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 왼쪽 파일 업로드 섹션 -->
+        <div class="left-section">
+            <div class="file-upload" id="drop-area">
+                <p>여기로 파일을 드래그 앤 드롭 하세요</p>
+                <p>또는 클릭하여 파일 선택</p>
+                <input type="file" id="fileInput" multiple>
+                <!-- 파일 미리보기 -->
+                <div class="file-preview" id="file-preview"></div>
+            </div>
+        </div>
+
+        <!-- 오른쪽 인쇄 설정 섹션 -->
+        <div class="right-section">
+            <!-- 인쇄 설정 -->
+            <div class="settings">
+                <h3>인쇄 설정</h3>
+
+                <!-- 색상 선택 -->
+                <h4>색상 선택</h4>
+                <div class="toggle-button-group">
+                    <button class="toggle-button active" id="blackwhite-btn">흑백</button>
+                    <button class="toggle-button" id="color-btn">컬러</button>
+                </div>
+
+                <!-- 출력 방향 -->
+                <h4>출력 방향</h4>
+                <div class="toggle-button-group">
+                    <button class="toggle-button active" id="portrait-btn">세로</button>
+                    <button class="toggle-button" id="landscape-btn">가로</button>
+                </div>
+
+                <!-- 용지 크기 -->
+                <h4>용지 크기</h4>
+                <div class="toggle-button-group">
+                    <button class="toggle-button active" id="a4-btn">A4</button>
+                    <button class="toggle-button" id="a5-btn">A5</button>
+                    <button class="toggle-button" id="letter-btn">Letter</button>
+                    <button class="toggle-button" id="legal-btn">Legal</button>
+                </div>
+
+                <!-- 페이지 범위 -->
+                <h4>페이지 범위</h4>
+                <div class="toggle-button-group">
+                    <button class="toggle-button active" id="all-pages-btn">전체</button>
+                    <button class="toggle-button" id="selected-pages-btn">선택 페이지</button>
+                    <input type="text" id="page-range-input" class="page-range-input" placeholder="1,3-5">
+                </div>
+
+                <!-- 프린트 신청 버튼 -->
+                <button class="submit-btn" id="submit-btn">프린트 신청</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const blackwhiteBtn = document.getElementById('blackwhite-btn');
+        const colorBtn = document.getElementById('color-btn');
+        const previewBox = document.createElement('div');
+        previewBox.classList.add('preview-box', 'blackwhite', 'portrait', 'a4');
+        const dropArea = document.getElementById('drop-area');
+
+        blackwhiteBtn.addEventListener('click', () => {
+            blackwhiteBtn.classList.add('active');
+            colorBtn.classList.remove('active');
+            previewBox.classList.remove('color');
+            previewBox.classList.add('blackwhite');
+        });
+        colorBtn.addEventListener('click', () => {
+            colorBtn.classList.add('active');
+            blackwhiteBtn.classList.remove('active');
+            previewBox.classList.remove('blackwhite');
+            previewBox.classList.add('color');
+        });
+
+        const portraitBtn = document.getElementById('portrait-btn');
+        const landscapeBtn = document.getElementById('landscape-btn');
+        portraitBtn.addEventListener('click', () => {
+            portraitBtn.classList.add('active');
+            landscapeBtn.classList.remove('active');
+            previewBox.classList.remove('landscape');
+            previewBox.classList.add('portrait');
+        });
+        landscapeBtn.addEventListener('click', () => {
+            landscapeBtn.classList.add('active');
+            portraitBtn.classList.remove('active');
+            previewBox.classList.remove('portrait');
+            previewBox.classList.add('landscape');
+        });
+
+        const a4Btn = document.getElementById('a4-btn');
+        const a5Btn = document.getElementById('a5-btn');
+        const letterBtn = document.getElementById('letter-btn');
+        const legalBtn = document.getElementById('legal-btn');
+        a4Btn.addEventListener('click', () => {
+            a4Btn.classList.add('active');
+            a5Btn.classList.remove('active');
+            letterBtn.classList.remove('active');
+            legalBtn.classList.remove('active');
+            previewBox.classList.remove('a5', 'letter', 'legal');
+            previewBox.classList.add('a4');
+        });
+        a5Btn.addEventListener('click', () => {
+            a5Btn.classList.add('active');
+            a4Btn.classList.remove('active');
+            letterBtn.classList.remove('active');
+            legalBtn.classList.remove('active');
+            previewBox.classList.remove('a4', 'letter', 'legal');
+            previewBox.classList.add('a5');
+        });
+        letterBtn.addEventListener('click', () => {
+            letterBtn.classList.add('active');
+            a4Btn.classList.remove('active');
+            a5Btn.classList.remove('active');
+            legalBtn.classList.remove('active');
+            previewBox.classList.remove('a4', 'a5', 'legal');
+            previewBox.classList.add('letter');
+        });
+        legalBtn.addEventListener('click', () => {
+            legalBtn.classList.add('active');
+            a4Btn.classList.remove('active');
+            a5Btn.classList.remove('active');
+            letterBtn.classList.remove('active');
+            previewBox.classList.remove('a4', 'a5', 'letter');
+            previewBox.classList.add('legal');
+        });
+
+        const allPagesBtn = document.getElementById('all-pages-btn');
+        const selectedPagesBtn = document.getElementById('selected-pages-btn');
+        const pageRangeInput = document.getElementById('page-range-input');
+
+        allPagesBtn.addEventListener('click', () => {
+            allPagesBtn.classList.add('active');
+            selectedPagesBtn.classList.remove('active');
+            pageRangeInput.style.display = 'none'; 
+        });
+
+        selectedPagesBtn.addEventListener('click', () => {
+            selectedPagesBtn.classList.add('active');
+            allPagesBtn.classList.remove('active');
+            pageRangeInput.style.display = 'inline-block'; 
+        });
+
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('file-preview');
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragging');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragging');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragging');
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+
+            dropArea.innerHTML = '';
+            previewBox.textContent = '미리보기';
+            dropArea.appendChild(previewBox);
+
+            filePreview.innerHTML = '';
+            Array.from(files).forEach(file => {
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+                filePreview.appendChild(fileName);
+            });
+        }
+
+        const submitBtn = document.getElementById('submit-btn');
+
+    function toggleSubmitButton() {
+        if (fileInput.files.length === 0) {
+            submitBtn.innerText = 'file 404';
+            submitBtn.disabled = true;
+            submitBtn.style.cursor = 'not-allowed'; 
+        } else {
+            submitBtn.innerText = '프린트 신청';
+            submitBtn.disabled = false;
+            submitBtn.style.backgroundColor = ''; 
+            submitBtn.style.cursor = 'pointer'; 
+        }
+    }
+    function parsePageRange(pageRange) {
+    const pages = [];
+
+    pageRange.split(',').forEach(part => {
+        if (part.includes('-')) {
+            const [start, end] = part.split('-').map(Number);
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+        } else {
+            pages.push(Number(part));
+        }
+    });
+
+    return pages.join(',');
+}
+
+    fileInput.addEventListener('change', () => {
+        toggleSubmitButton();
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        dropArea.classList.remove('dragging');
+        const files = event.dataTransfer.files;
+        handleFiles(files);
+        toggleSubmitButton(); 
+    });
+
+    toggleSubmitButton();
+
+    submitBtn.addEventListener('click', () => {
+    if (fileInput.files.length === 0) {
+        return;
+    }
+
+    const color = document.querySelector('#blackwhite-btn.active, #color-btn.active').textContent;
+    const direction = document.querySelector('#portrait-btn.active, #landscape-btn.active').textContent;
+    const paperSize = document.querySelector('#a4-btn.active, #a5-btn.active, #letter-btn.active, #legal-btn.active').textContent;
+
+    let pageRange = document.querySelector('#all-pages-btn.active') ? '전체' : pageRangeInput.value;
+
+    if (pageRange !== '전체') {
+        pageRange = parsePageRange(pageRange);
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < fileInput.files.length; i++) {
+        formData.append('files', fileInput.files[i]);
+    }
+
+    const requestData = {
+        color: color,
+        direction: direction,
+        paperSize: paperSize,
+        pageRange: pageRange
+    };
+
+    const jsonRequestData = JSON.stringify(requestData);
+    formData.append('printOptions', new Blob([jsonRequestData], { type: 'application/json' }));
+
+    fetch('/api/print-request', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateButtonStatus(true);  
+    })
+    .catch(error => {
+        updateButtonStatus(false);  
+    });
+}); 
+function updateButtonStatus(success) {
+    if (success) {
+        submitBtn.innerText = '신청 완료!';
+        submitBtn.style.backgroundColor = 'green';  
+        submitBtn.style.color = 'white';            
+    } else {
+        submitBtn.innerText = 'Error';
+        submitBtn.style.backgroundColor = 'red';    
+        submitBtn.style.color = 'white';            
+    }
+
+    setTimeout(() => {
+        submitBtn.innerText = '프린트 신청';
+        submitBtn.style.backgroundColor = '#007bff';       
+        submitBtn.style.color = 'white';          
+    }, 3000);
+}    
+    </script>
+</body>
+</html>
+
+
+<!-- 
+예시 요청 뽑아주는걸로 뽑았는데 아마 이렇게 갈거임
+
+POST /api/print-request HTTP/1.1
+Host: example.com
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Length: 634
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="document.pdf"
+Content-Type: application/pdf
+
+<binary data of the file>
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="printOptions"
+Content-Type: application/json
+
+{
+    "color": "흑백",
+    "direction": "세로",
+    "paperSize": "A4",
+    "pageRange": "4,5,6"
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW-- -->
